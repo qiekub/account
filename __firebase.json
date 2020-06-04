@@ -1,0 +1,28 @@
+{
+  "hosting": {
+    "public": "./public/",
+	"site": "qiekub-account",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+	"rewrites": [
+      {
+        // Directs a request to Cloud Functions
+        "source": "/**",
+        "function": "account"
+      }
+      // ,{
+      //   // Directs a request to Cloud Functions
+      //   "source": "/",
+      //   "function": "account"
+      // }
+      // ,{
+      //   // Directs a request to Cloud Functions
+      //   "source": "/**",
+      //   "function": "account"
+      // }
+    ]
+  }
+}
