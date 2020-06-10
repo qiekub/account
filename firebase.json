@@ -1,28 +1,88 @@
 {
-  "hosting": {
-    "public": "./public/",
-	"site": "qiekub-account",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-	"rewrites": [
-      {
-        // Directs a request to Cloud Functions
-        "source": "**",
-        "function": "account"
-      }
-      // ,{
-      //   // Directs a request to Cloud Functions
-      //   "source": "/",
-      //   "function": "account"
-      // }
-      // ,{
-      //   // Directs a request to Cloud Functions
-      //   "source": "/**",
-      //   "function": "account"
-      // }
-    ]
-  }
+	"hosting": {
+		// "predeploy": [
+		// 	"yarn build"
+		// ],
+		"site": "qiekub-account",
+		"public": "./build/",
+		"ignore": [
+			"firebase.json",
+			"**/.*",
+			"**/node_modules/**"
+		],
+		"cleanUrls": true,
+		"trailingSlash": true,
+
+
+
+		"rewrites": [
+			{
+				// Shows the same content for multiple URLs
+				"source": "**",
+				"destination": "/index.html"
+			}
+		],
+
+
+
+		"headers": [
+			{
+				"source": "/service-worker.js",
+				"headers": [{
+					"key": "Cache-Control",
+					"value": "no-cache"
+				}]
+			},
+			{
+				"source": "**",
+				"headers": [{
+					"key": "Access-Control-Allow-Origin",
+					"value": "*"
+				}]
+			},
+			{
+				"source": "/static/**",
+				"headers": [{
+					"key": "Cache-Control",
+					"value": "max-age=604800" // 604800 seconds = 1 week
+				}]
+			},
+			{
+				"source": "manifest.json",
+				"headers": [{
+					"key": "Cache-Control",
+					"value": "max-age=2629800" // 2629800 seconds = 1 month
+				}]
+			},
+			{
+				"source": "/materialicons/index.css",
+				"headers": [{
+					"key": "Cache-Control",
+					"value": "max-age=31557600" // 31557600 seconds = 1 year
+				}]
+			},
+			{
+				"source": "/roboto-font/index.css",
+				"headers": [{
+					"key": "Cache-Control",
+					"value": "max-age=31557600" // 31557600 seconds = 1 year
+				}]
+			},
+			{
+				"source": "**/*.@(jpg|jpeg|gif|png|webp)",
+				"headers": [{
+					"key": "Cache-Control",
+					"value": "max-age=2629800" // 2629800 seconds = 1 month
+				}]
+			},
+			{
+				"source": "**/*.@(ttf|woff|woff2)",
+				"headers": [{
+					"key": "Cache-Control",
+					"value": "max-age=31557600" // 31557600 seconds = 1 year
+				}]
+			}
+		]
+
+	}
 }
