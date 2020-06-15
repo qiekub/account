@@ -1,3 +1,9 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+
+.env.local_ip.json
+
+
 # Logs
 logs
 *.log
@@ -43,8 +49,10 @@ bower_components
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
-# Dependency directories
+# Dependencies
 node_modules/
+/.pnp
+.pnp.js
 
 # Optional npm cache directory
 .npm
@@ -63,3 +71,17 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
