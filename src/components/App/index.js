@@ -384,8 +384,8 @@ class App extends React.Component {
 
 		const account_iri_prefix = (
 			this.props.globals.isDevEnvironment
-			? `http://${this.props.globals.local_ip}:5000/qiekub/us-central1/account/`
-			: 'https://account.qiekub.org/'
+			? `http://${this.props.globals.local_ip}:5000/qiekub/us-central1/api/auth`
+			: 'https://api.qiekub.org/auth'
 		)
 
 		if (!(!!this.state.profileID)) {
@@ -407,12 +407,12 @@ class App extends React.Component {
 						<br />
 						<br />
 						<br />
-						<a href={account_iri_prefix+'auth/github/'}>
+						<a href={account_iri_prefix+'/github/'}>
 							<Button variant="contained">Login with Github</Button>
 						</a>
 						<br />
 						<br />
-						<a href={account_iri_prefix+'auth/twitter/'}>
+						<a href={account_iri_prefix+'/twitter/'}>
 							<Button variant="contained">Login with Twitter</Button>
 						</a>
 						<br />
@@ -484,7 +484,7 @@ class App extends React.Component {
 					<br />
 					<br />
 					<br />
-					<a href={account_iri_prefix+'logout/'}>
+					<a href={account_iri_prefix+'/logout/'}>
 						<Button variant="contained">Logout</Button>
 						<br />
 						<Typography variant="body2">
