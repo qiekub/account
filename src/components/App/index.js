@@ -385,7 +385,7 @@ class App extends React.Component {
 		const account_iri_prefix = (
 			this.props.globals.isDevEnvironment
 			? `http://${this.props.globals.local_ip}:5000/qiekub/us-central1/account/`
-			: 'https://accounts.qiekub.org/'
+			: 'https://account.qiekub.org/'
 		)
 
 		if (!(!!this.state.profileID)) {
