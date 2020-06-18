@@ -486,13 +486,13 @@ class App extends React.Component {
 					<br />
 					<a href={account_iri_prefix+'/logout/'}>
 						<Button variant="contained">Logout</Button>
-						<br />
-						<Typography variant="body2">
-							Wenn du dich ausloggst wird der Cookie "__session" von deinem Rechner gelöscht.
-							<br />
-							(Falls dies nicht passirt, dürfte das ein deinem Browser liegen. Schreib uns aber bitte. Vielleicht haben ja auch wir etwas falsch programmiert. Wird möchten immerhin dass du bei uns sicher bist!)
-						</Typography>
 					</a>
+					<br />
+					<Typography variant="body2">
+						Wenn du dich ausloggst wird der Cookie "__session" von deinem Rechner gelöscht.
+						<br />
+						(Falls dies nicht passirt, dürfte das ein deinem Browser liegen. Schreib uns aber bitte. Vielleicht haben ja auch wir etwas falsch programmiert. Wird möchten immerhin dass du bei uns sicher bist!)
+					</Typography>
 				</TabPanel>
 				<TabPanel value={action} index="changesets">
 					<Typography variant="h4">Changesets</Typography>
