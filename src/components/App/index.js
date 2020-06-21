@@ -5,7 +5,6 @@ import { Router, navigate } from '@reach/router'
 
 import {
 	whoami as query_whoami,
-	loadChangesets as query_loadChangesets,
 	sessions as query_sessions,
 	accounts as query_accounts,
 } from '../../queries.js'
@@ -126,7 +125,6 @@ class App extends React.Component {
 			profileID: false,
 			sessions: [],
 			accounts: [],
-			changesets: [],
 
 			doc: null,
 			prefersDarkMode: false,
@@ -152,7 +150,6 @@ class App extends React.Component {
 		this.loadProfileID = this.loadProfileID.bind(this)
 		this.loadSessions = this.loadSessions.bind(this)
 		this.loadAccounts = this.loadAccounts.bind(this)
-		this.loadChangesets = this.loadChangesets.bind(this)
 	}
 
 	componentDidMount(){
@@ -317,7 +314,6 @@ class App extends React.Component {
 				})
 				this.loadSessions()
 				this.loadAccounts()
-				this.loadChangesets()
 			}else{
 				this.setState({
 					loading: false,
@@ -353,22 +349,6 @@ class App extends React.Component {
 				this.setState({accounts: data.accounts})
 			}else{
 				this.setState({accounts: []})
-			}
-		}).catch(error=>{
-			console.error(error)
-		})
-	}
-
-	loadChangesets(){
-		this.props.globals.graphql.query({
-			fetchPolicy: 'no-cache',
-			query: query_loadChangesets,
-		}).then(({data}) => {
-			console.log('in-loadChangesets', data)
-			if (!!data && !!data.changesets) {
-				this.setState({changesets: data.changesets})
-			}else{
-				this.setState({changesets: []})
 			}
 		}).catch(error=>{
 			console.error(error)
@@ -474,7 +454,6 @@ class App extends React.Component {
 						scrollButtons="auto"
 					>
 						<Tab value="" label="Start" />
-						<Tab value="changesets" label="Changesets" />
 						<Tab value="accounts" label="Accounts" />
 						<Tab value="sessions" label="Sessions" />
 					</Tabs>
@@ -493,113 +472,6 @@ class App extends React.Component {
 						<br />
 						(Falls dies nicht passirt, dürfte das ein deinem Browser liegen. Schreib uns aber bitte. Vielleicht haben ja auch wir etwas falsch programmiert. Wird möchten immerhin dass du bei uns sicher bist!)
 					</Typography>
-				</TabPanel>
-				<TabPanel value={action} index="changesets">
-					<Typography variant="h4">Changesets</Typography>
-					<br />
-					<br />
-					<br />
-					{
-						this.state.changesets.map((changeset, index) => {
-
-
-							return (
-								<Card
-									key={changeset._id}
-									variant="outlined"
-									style={{
-										marginBottom: '32px',
-									}}
-								>
-									<CardContent>
-										<Typography variant="h5" component="h2">
-											{changeset.properties.antiSpamUserIdentifier}
-										</Typography>
-
-										<div style={{
-											paddingTop: '16px',
-											overflow: 'auto',
-											paddingBottom: '16px',
-											margin: '0 -16px',
-										}}>
-											<Table size="small">
-												<TableBody>
-													{
-														Object.entries({
-															...changeset.properties,
-															...changeset.metadata,
-														})
-														.filter(entry =>
-															// entry[0] !== 'tags'
-															// &&
-															entry[0] !== '__typename'
-														)
-														.map(([tag,value]) => {
-															if (tag === 'antiSpamUserIdentifier') {
-																tag = 'antiSpamID'
-															}
-
-															let cellContent = null
-															if (tag === 'tags') {
-																cellContent = (
-																	<Table
-																		className="tagsTable"
-																		size="small"
-																		style={{
-																			minWidth: '100%',
-																			margin: '-6px -16px -7px -16px',
-																		}}
-																	>
-																		<TableBody>
-																			{Object.entries(changeset.properties.tags).map(([tag,value]) => (
-																				<TableRow key={tag} style={{
-																					verticalAlign: 'top',
-																				}}>
-																					<TableCell component="th" scope="row">{tag}</TableCell>
-																					<TableCell>{value.toString()}</TableCell>
-																				</TableRow>
-																			))}
-																		</TableBody>
-																	</Table>
-																)
-															} else if (tag === 'forID') {
-																cellContent = (
-																	<a target="_blank" rel="noopener noreferrer" href={"https://map.qiekub.org/view/"+value+"/"}>
-																		<Button
-																			 variant="contained"
-																			 color="secondary"
-																		>{value}</Button>
-																	</a>
-																)
-															}else{
-																cellContent = value.toString()
-															}
-
-															return (
-																<TableRow key={tag} style={{
-																	verticalAlign: 'top',
-																}}>
-																	<TableCell component="th" scope="row">
-																		<strong>{tag}</strong>
-																	</TableCell>
-																	<TableCell align="left">
-																		{cellContent}
-																	</TableCell>
-																</TableRow>
-															)
-														})
-													}
-												</TableBody>
-											</Table>
-										</div>
-									</CardContent>
-									{/*<CardActions>
-										<Button size="small">View </Button>
-									</CardActions>*/}
-								</Card>
-							)
-						})
-					}
 				</TabPanel>
 				<TabPanel value={action} index="accounts">
 					<Typography variant="h4">Connected Accounts</Typography>
