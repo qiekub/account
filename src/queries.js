@@ -6,7 +6,7 @@ export const whoami = gql`
 	}
 `
 
-export const loadSessions = gql`
+export const sessions = gql`
 	query {
 		sessions {
 			_id
@@ -24,7 +24,7 @@ export const loadSessions = gql`
 	}
 `
 
-export const loadAccounts = gql`
+export const accounts = gql`
 	query {
 		accounts {
 			_id

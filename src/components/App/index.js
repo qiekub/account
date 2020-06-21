@@ -5,9 +5,9 @@ import { Router, navigate } from '@reach/router'
 
 import {
 	whoami as query_whoami,
-	loadSessions as query_loadSessions,
-	loadAccounts as query_loadAccounts,
 	loadChangesets as query_loadChangesets,
+	sessions as query_sessions,
+	accounts as query_accounts,
 } from '../../queries.js'
 
 // import categories from '../../data/dist/categories.json'
@@ -332,7 +332,7 @@ class App extends React.Component {
 	loadSessions(){
 		this.props.globals.graphql.query({
 			fetchPolicy: 'no-cache',
-			query: query_loadSessions,
+			query: query_sessions,
 		}).then(({data}) => {
 			if (!!data && !!data.sessions) {
 				this.setState({sessions: data.sessions})
@@ -347,7 +347,7 @@ class App extends React.Component {
 	loadAccounts(){
 		this.props.globals.graphql.query({
 			fetchPolicy: 'no-cache',
-			query: query_loadAccounts,
+			query: query_accounts,
 		}).then(({data}) => {
 			if (!!data && !!data.accounts) {
 				this.setState({accounts: data.accounts})
