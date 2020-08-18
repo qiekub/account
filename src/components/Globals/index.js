@@ -5,21 +5,25 @@ import { AppLocalizationProvider } from '../../l10n.js'
 
 import local_ip from '../../.env.local_ip.json'
 
-import { ApolloClient } from 'apollo-boost'
-
-import { HttpLink } from 'apollo-link-http'
-
-import { InMemoryCache } from 'apollo-cache-inmemory'
+import {
+	ApolloClient,
+	HttpLink,
+	InMemoryCache,
+} from '@apollo/client'
 import { persistCache } from 'apollo-cache-persist'
 
 import { withLocalStorage } from '../LocalStorage/'
 
+import {
+	whoami as query_whoami,
+	countries as query_countries,
+} from '../../queries.js'
 
 const isDevEnvironment = (local_ip !== '')
 
 
 function getCookie(name){
-	const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+	const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
 	if (match) {
 		return match[2]
 	}
@@ -42,26 +46,39 @@ async function getInitialGlobalState(callback){
 	
 	const globalState = {}
 
-	globalState.globalStateFinishedLoading = true
-
-	const link = new HttpLink({
-		credentials: 'omit',
-		headers: {
-			'-x-session': getCookie('__session'),
-		},
-		uri: (
-			isDevEnvironment
-			? `http://${local_ip}:5000/qiekub/us-central1/graphql/graphql/v1`
-			: `https://api.qiekub.org/graphql/v1/`
-		),
-	})
+	const __session = getCookie('__session')
 
 	globalState.graphql = new ApolloClient({
 		cache,
-		link,
+		link: new HttpLink({
+			credentials: 'omit',
+			headers: {
+				'-x-session': __session,
+			},
+			uri: (
+				isDevEnvironment
+				? `http://${local_ip}:5000/qiekub/us-central1/graphql/graphql/v1`
+				: `https://api.qiekub.org/graphql/v1/`
+			),
+		})
 	})
 
-	callback(globalState)
+	if (!!__session) {
+		globalState.graphql.query({
+			query: query_whoami,
+			fetchPolicy: 'cache-first',
+		}).then(result => {
+			globalState.profileID = result.data.whoami
+		}).catch(error => {
+			console.error(error)
+		}).finally(() => {
+			globalState.globalStateFinishedLoading = true
+			callback(globalState)
+		})
+	}else{
+		globalState.globalStateFinishedLoading = true
+		callback(globalState)
+	}
 }
 
 
@@ -78,6 +95,7 @@ class GlobalsProvider extends React.Component {
 			globalStateFinishedLoading: false,
 
 			pageOpenTS: new Date(),
+			profileID: null,
 	
 			local_ip,
 			isDevEnvironment,
@@ -116,9 +134,70 @@ class GlobalsProvider extends React.Component {
 		// 	}
 		// }
 
+		this.country_by_iso = null
+		this.saved_country_callbacks = []
+
+		this.getCountryByCode_internal = this.getCountryByCode_internal.bind(this)
+		this.getCountryByCode = this.getCountryByCode.bind(this)
+	}
+
+	componentDidMount(){
 		getInitialGlobalState(globalState=>{
-			this.setState(globalState)
+			this.setState({
+				...globalState,
+				getCountryByCode: this.getCountryByCode,
+			}, ()=>{
+				this.getCountryByCode()
+			})
 		})
+	}
+
+	getCountryByCode_internal(iso_a3){
+		iso_a3 = iso_a3.toUpperCase()
+		return this.country_by_iso[iso_a3]
+	}
+
+	getCountryByCode(iso_a3, callback){
+		if (iso_a3 && callback) {
+			this.saved_country_callbacks.push(()=>{
+				callback(this.getCountryByCode_internal(iso_a3))
+			})
+		}
+
+		if (this.country_by_iso === null) {
+			if (!!this.state.graphql) {
+				const ios_tag_key = 'ISO3166-1:alpha3'
+				this.state.graphql.watchQuery({
+					fetchPolicy: 'cache-and-network',
+					query: query_countries,
+					variables: {
+						wantedTags: [ios_tag_key],
+						languages: navigator.languages,
+					},
+				})
+				.subscribe(({data}) => {
+					if (this.country_by_iso === null && !!data && !!data.countries) {
+						const country_by_iso = {}
+		
+						for (const doc of data.countries) {
+							let country_key = doc.properties.tags[ios_tag_key] || ''
+							country_key = country_key.toUpperCase()
+							country_by_iso[country_key] = doc
+						}
+		
+						this.country_by_iso = country_by_iso
+	
+						for (const saved_country_callback of this.saved_country_callbacks) {
+							saved_country_callback()
+						}
+					}
+				})
+			}
+		}else{
+			for (const saved_country_callback of this.saved_country_callbacks) {
+				saved_country_callback()
+			}
+		}
 	}
 
 	render() {

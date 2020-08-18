@@ -1,20 +1,14 @@
 {
   "license": "UNLICENSED",
   "dependencies": {
-    "@apollo/react-hooks": "^3.1.3",
+    "@apollo/client": "^3.1.3",
     "@fluent/bundle": "^0.15.0",
     "@fluent/langneg": "^0.4.0",
     "@fluent/react": "^0.12.0",
     "@material-ui/core": "^4.9.5",
     "@material-ui/icons": "^4.9.1",
     "@reach/router": "^1.3.3",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "apollo-boost": "^0.4.7",
-    "apollo-cache-inmemory": "^1.6.5",
     "apollo-cache-persist": "^0.1.1",
-    "apollo-link-http": "^1.5.17",
     "graphql": "^14.6.0",
     "immutability-helper": "^3.0.2",
     "intl-pluralrules": "^1.1.2",
@@ -22,8 +16,7 @@
     "react-cookie": "^4.0.3",
     "react-dom": "^16.13.0",
     "react-scripts": "3.4.0",
-    "store": "^2.0.12",
-    "typeface-roboto": "^0.0.75"
+    "store": "^2.0.12"
   },
   "scripts": {
     "buildData": "cd ./src/data/; node ./build_address_formats_files.js; node ./build_category_files.js; cd ../../;",
