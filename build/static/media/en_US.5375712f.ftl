@@ -1,1 +1,0 @@
-date-input-order = month-day-year
