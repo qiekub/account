@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import './index.css'
 
-import { Router, navigate } from '@reach/router'
+import { Router } from '@reach/router'
 
 import {
 	whoami as query_whoami,
@@ -22,10 +22,9 @@ import { createMuiTheme, ThemeProvider, StylesProvider } from '@material-ui/core
 // import { CssBaseline } from '@material-ui/core'
 
 import {
-	Paper,
-	AppBar,
-	Tabs,
-	Tab,
+	Card,
+	CardContent,
+	CardActions,
 
 	Button,
 	Typography,
@@ -81,31 +80,6 @@ function HandlePath(props) {
 	return null
 }
 
-function TabPanel(props) {
-	const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      style={{
-      	position: 'relative',
-      	width: '400px',
-      	maxWidth: '100%',
-      	margin: '0 auto',
-      	padding: '32px',
-      }}
-      {...other}
-    >
-      {
-      	value === index
-      	? children
-      	: null
-      }
-    </div>
-  );
-}
-
 class App extends React.Component {
 	constructor(props) {
 		super(props)
@@ -136,7 +110,6 @@ class App extends React.Component {
 		this.check_small_screen = this.check_small_screen.bind(this)
 
 		this.onPathChanged = this.onPathChanged.bind(this)
-		this.handleTabChange = this.handleTabChange.bind(this)
 
 		this.loadProfileID = this.loadProfileID.bind(this)
 		this.loadSessions = this.loadSessions.bind(this)
@@ -285,14 +258,6 @@ class App extends React.Component {
 		this.setState(pathVars)
 	}
 
-	handleTabChange(event, newValue){
-		if (!!newValue) {
-			navigate(`/${newValue}/`)
-		}else{
-			navigate(`/`)
-		}
-	}
-
 	loadProfileID(){
 		this.props.globals.graphql.query({
 			fetchPolicy: 'no-cache',
@@ -346,58 +311,139 @@ class App extends React.Component {
 		})
 	}
 
-	render() {
-		if (this.state.loading) {
-			return null
-		}
+	renderConnectButtons(){
+		const account_iri_prefix = (
+			this.props.globals.isDevEnvironment
+			? `http://${this.props.globals.local_ip}:5000/qiekub/us-central1/auth/auth`
+			: 'https://api.qiekub.org/auth'
+		)
 
-		const action = this.state.action
+		return (<>
+			<a href={account_iri_prefix+'/github/'}>
+				<Button variant="contained">Connect with Github</Button>
+			</a>
+			<br />
+			<br />
+			<a href={account_iri_prefix+'/twitter/'}>
+				<Button variant="contained">Connect with Twitter</Button>
+			</a>
+			<br />
+			<br />
+			<a href={account_iri_prefix+'/openstreetmap/'}>
+				<Button variant="contained">Connect with OpenSteetMap</Button>
+			</a>
+		</>)
+	}
 
+	renderLogin(){
+		return (<>
+					<Card
+						elevation={6}
+						className="card"
+					>
+						<CardContent>
+							<Typography gutterBottom variant="h5" component="h2">Login</Typography>
+							<Typography variant="body2" color="textSecondary" component="p">
+								Wenn du dich anmeldest wird ein Cookie namens "__session" in deinem Broswer gespeichert.
+							<br />
+							Dieser Cookie bleibt für 14 Tage bestehen. Somit bleibst du 14 Tage lang angemeldet. Immer wenn du die Seite neu aufrufst wird die Zeit bis zum automatischen Löschen des Cookies um 14 Tage verlängert.
+							</Typography>
+
+							<br />
+							<br />
+							{this.renderConnectButtons()}
+
+						</CardContent>
+					</Card>
+		</>)
+	}
+
+	renderUserInfos(){
 		const account_iri_prefix = (
 			this.props.globals.isDevEnvironment
 			? `http://${this.props.globals.local_ip}:5000/qiekub/us-central1/api/auth`
 			: 'https://api.qiekub.org/auth'
 		)
 
-		if (!(!!this.state.profileID)) {
-			return (
-				<ThemeProvider theme={this.state.theme}>
-				<StylesProvider injectFirst>
-					<Paper
-						style={{
-							position: 'fixed',
-							top: 0,
-							right: 0,
-							bottom: 0,
-							left: 0,
-							textAlign: 'center',
-							overflow: 'auto',
-							backgroundColor: this.state.theme.palette.background.default,
-						}}
+		return (<>
+					<Card
+						elevation={6}
+						className="card"
 					>
-						<br />
-						<br />
-						<br />
-						<a href={account_iri_prefix+'/github/'}>
-							<Button variant="contained">Login with Github</Button>
-						</a>
-						<br />
-						<br />
-						<a href={account_iri_prefix+'/twitter/'}>
-							<Button variant="contained">Login with Twitter</Button>
-						</a>
-						<br />
-						<br />
-						<br />
-						<Typography variant="body2">
-							Wenn du dich anmeldest wird ein Cookie namens "__session" in deinem Broswer gespeichert.
+						<CardContent>
+							<Typography gutterBottom variant="h5" component="h2">Connected Accounts</Typography>
+							<List>
+							{
+								this.state.accounts.map((account, index) => {
+									console.log(account)
+									return (
+										<ListItem key={account._id}>
+											<ListItemText
+												primary={account.properties.provider}
+												secondary={[account.properties.displayName, account.properties.username].filter(Boolean).map(v => (<div>{v}</div>))}
+											/>
+										</ListItem>
+									)
+								})
+							}
+							</List>
+
 							<br />
-							Dieser Cookie bleibt für 14 Tage bestehen. Somit bleibst du 14 Tage lang angemeldet. Immer wenn du die Seite neu aufrufst wird die Zeit bis zum automatischen Löschen des Cookies um 14 Tage verlängert.
-						</Typography>
-					</Paper>
-				</StylesProvider>
-				</ThemeProvider>
-			)
+							{this.renderConnectButtons()}
+						</CardContent>
+					</Card>
+	
+					<Card
+						elevation={6}
+						className="card"
+					>
+						<CardContent>
+							<Typography gutterBottom variant="h5" component="h2">Sessions</Typography>
+							<List>
+							{
+								this.state.sessions.map((session, index) => {
+									return (
+										<ListItem key={session._id}>
+											<ListItemText
+												primary={session.properties.user_agent}
+												secondary={"Expires: "+session.properties.expires}
+											/>
+										</ListItem>
+									)
+								})
+							}
+							</List>
+						</CardContent>
+					</Card>
+	
+					<Card
+						elevation={6}
+						className="card"
+					>
+						<CardContent>
+							<Typography gutterBottom variant="h5" component="h2">Logout</Typography>
+							<Typography variant="body2" color="textSecondary" component="p">
+								Wenn du dich ausloggst wird der Cookie "__session" von deinem Rechner gelöscht.
+								<br />
+								(Falls dies nicht passirt, dürfte das ein deinem Browser liegen. Schreib uns aber bitte. Vielleicht haben ja auch wir etwas falsch programmiert. Wird möchten immerhin dass du bei uns sicher bist!)
+							</Typography>
+						</CardContent>
+						<CardActions style={{
+							float: 'right',
+						}}>
+							<a href={account_iri_prefix+'/logout/'}>
+								<Button size="small" color="primary">
+									Logout
+								</Button>
+							</a>
+						</CardActions>
+					</Card>
+		</>)
+	}
+
+	render() {
+		if (this.state.loading) {
+			return null
 		}
 
 		return (<>
@@ -416,7 +462,7 @@ class App extends React.Component {
 			</Router>
 
 
-			<Paper
+			<div
 				style={{
 					position: 'fixed',
 					top: 0,
@@ -424,88 +470,18 @@ class App extends React.Component {
 					bottom: 0,
 					left: 0,
 					overflow: 'auto',
-					paddingTop: '48px',
 					backgroundColor: this.state.theme.palette.background.default,
+					textAlign: 'center',
 				}}
 			>
-				<AppBar
-					position="fixed"
-					color="transparent"
-					style={{
-						borderTopRightRadius: '8px',
-						borderTopLeftRadius: '8px',
-						overflow: 'hidden',
-						backgroundColor: this.state.theme.palette.background.paper,
-					}}
-				>
-					<Tabs
-						value={action}
-						onChange={this.handleTabChange}
-						variant="scrollable"
-						scrollButtons="auto"
-					>
-						<Tab value="" label="Start" />
-						<Tab value="accounts" label="Accounts" />
-						<Tab value="sessions" label="Sessions" />
-					</Tabs>
-				</AppBar>
-
-				<TabPanel value={action} index="">
-					<br />
-					<br />
-					<br />
-					<a href={account_iri_prefix+'/logout/'}>
-						<Button variant="contained">Logout</Button>
-					</a>
-					<br />
-					<Typography variant="body2">
-						Wenn du dich ausloggst wird der Cookie "__session" von deinem Rechner gelöscht.
-						<br />
-						(Falls dies nicht passirt, dürfte das ein deinem Browser liegen. Schreib uns aber bitte. Vielleicht haben ja auch wir etwas falsch programmiert. Wird möchten immerhin dass du bei uns sicher bist!)
-					</Typography>
-				</TabPanel>
-				<TabPanel value={action} index="accounts">
-					<Typography variant="h4">Connected Accounts</Typography>
-					<br />
-					<br />
-					<br />
-					<List>
+				<div style={{display: 'inline-block'}}>
 					{
-						this.state.accounts.map((account, index) => {
-							return (
-								<ListItem key={account._id}>
-									<ListItemText
-										primary={account.properties.provider}
-										secondary={account.properties.username}
-									/>
-								</ListItem>
-							)
-						})
+						!(!!this.state.profileID)
+						? this.renderLogin()
+						: this.renderUserInfos()
 					}
-					</List>
-				</TabPanel>
-				<TabPanel value={action} index="sessions">
-					<Typography variant="h4">Sessions</Typography>
-					<br />
-					<br />
-					<br />
-					<List>
-					{
-						this.state.sessions.map((session, index) => {
-							return (
-								<ListItem key={session._id}>
-									<ListItemText
-										primary={session.properties.user_agent}
-										secondary={"Expires: "+session.properties.expires}
-									/>
-								</ListItem>
-							)
-						})
-					}
-					</List>
-				</TabPanel>
-
-			</Paper>
+				</div>
+			</div>
 
 		</StylesProvider>
 		</ThemeProvider>
