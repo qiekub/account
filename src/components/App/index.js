@@ -361,7 +361,7 @@ class App extends React.Component {
 	renderUserInfos(){
 		const account_iri_prefix = (
 			this.props.globals.isDevEnvironment
-			? `http://${this.props.globals.local_ip}:5000/qiekub/us-central1/api/auth`
+			? `http://${this.props.globals.local_ip}:5000/qiekub/us-central1/auth/auth`
 			: 'https://api.qiekub.org/auth'
 		)
 
