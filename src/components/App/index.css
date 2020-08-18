@@ -58,7 +58,7 @@ html body .MuiButton-root{
 	/*transition: left var(--transition-time) var(--timing-function);*/
 }
 
-
+.card{
 	width: 400px;
 	max-width: 100%;
 	margin: 16px;
