@@ -8,7 +8,7 @@ body {
 
 	--z-index-page: 1;
 
-	--border-radius: 8px;
+	--border-radius: 16px;
 
 	--transition-time: 300ms;
 	--timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -38,7 +38,11 @@ body,
 /* END prevent scroll and zoom on mobile devices */
 
 
+html body .MuiPaper-rounded{
+	border-radius: var(--border-radius);
 }
+html body .MuiButton-root{
+	border-radius: calc(var(--border-radius) / 2);
 }
 
 
