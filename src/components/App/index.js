@@ -330,7 +330,7 @@ class App extends React.Component {
 			<br />
 			<br />
 			<a href={account_iri_prefix+'/openstreetmap/'}>
-				<Button variant="contained">Connect with OpenSteetMap</Button>
+				<Button variant="contained">Connect with OpenStreetMap</Button>
 			</a>
 		</>)
 	}
