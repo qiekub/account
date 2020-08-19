@@ -88,3 +88,4 @@ node_modules/
 build/index.html
 build/asset-manifest.json
 build/service-worker.js
+src/.env.local_ip.json
